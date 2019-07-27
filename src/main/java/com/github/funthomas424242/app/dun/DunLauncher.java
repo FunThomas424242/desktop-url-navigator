@@ -22,7 +22,17 @@ package com.github.funthomas424242.app.dun;
  * #L%
  */
 
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeValidationException;
+import org.elasticsearch.node.internal.InternalSettingsPreparer;
+import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.transport.Netty4Plugin;
+
 import javax.swing.*;
+import java.util.Collection;
+
+import static java.util.Arrays.asList;
 
 public class DunLauncher {
 
@@ -48,6 +58,25 @@ public class DunLauncher {
                 TrayIconLauncher.launch();
             }
         });
+    }
+
+    public Node elasticSearchTestNode() throws NodeValidationException {
+        Node node = new MyNode(
+            Settings.builder()
+                .put("transport.type", "netty4")
+                .put("http.type", "netty4")
+                .put("http.enabled", "true")
+                .put("path.home", "elasticsearch-data")
+                .build(),
+            asList(Netty4Plugin.class));
+        node.start();
+        return node;
+    }
+
+    private static class MyNode extends Node {
+        public MyNode(Settings preparedSettings, Collection<Class<? extends Plugin>> classpathPlugins) {
+            super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, null), classpathPlugins);
+        }
     }
 
 
