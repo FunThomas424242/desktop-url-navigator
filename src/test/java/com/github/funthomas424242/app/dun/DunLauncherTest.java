@@ -1,4 +1,4 @@
-package com.github.funthomas424242.example.bookshop;
+package com.github.funthomas424242.app.dun;
 
 /*-
  * #%L
@@ -31,13 +31,13 @@ import java.time.Period;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class PersonTest {
+class DunLauncherTest {
 
-    Person person;
+    DunLauncher person;
 
     @BeforeEach
     void setUpTestfall() {
-        person = new Person("Thomas", "Schubert",
+        person = new DunLauncher("Thomas", "Schubert",
                 1968, 12, 25);
     }
 
