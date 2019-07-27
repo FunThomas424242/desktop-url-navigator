@@ -22,27 +22,33 @@ package com.github.funthomas424242.app.dun;
  * #L%
  */
 
-import java.time.LocalDate;
-import java.time.Period;
+import javax.swing.*;
 
 public class DunLauncher {
 
-    final String name;
-
-    final String vorname;
-
-    final LocalDate geburtstag;
-
-    int alter;
-
-    public DunLauncher(final String vorname, final String name, final int geburtsjahr, final int geburtsmonat, final int geburtstag) {
-        this.vorname = vorname;
-        this.name = name;
-        this.geburtstag = LocalDate.of(geburtsjahr, geburtsmonat, geburtstag);
+    public static void main(String[] args) {
+        /* Use an appropriate Look and Feel */
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        /* Turn off metal's use of bold fonts */
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+        //Schedule a job for the event-dispatching thread:
+        //adding TrayIcon.
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                TrayIconLauncher.launch();
+            }
+        });
     }
 
-    public void berechneAlter(){
-        this.alter = Period.between(geburtstag, LocalDate.now()).getYears();
-    }
 
 }

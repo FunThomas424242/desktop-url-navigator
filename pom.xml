@@ -295,7 +295,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.funthomas424242.rades-example.MyPocketmodGenerator</mainClass>
+                            <mainClass>com.github.funthomas424242.app.dun.DunLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -345,7 +345,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.github.funthomas424242.rades-example.MyPocketmodGenerator</mainClass>
+                                  <mainClass>com.github.funthomas424242.app.dun.DunLauncher</mainClass>
                                 </manifest>
                             </archive>
                             <tarLongFileMode>posix</tarLongFileMode>
