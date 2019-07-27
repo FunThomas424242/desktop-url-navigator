@@ -56,27 +56,48 @@ package com.github.funthomas424242.app.dun;
  * TrayIconDemo.java
  */
 
-import org.apache.pdfbox.io.IOUtils;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeValidationException;
+import org.elasticsearch.node.internal.InternalSettingsPreparer;
+import org.elasticsearch.plugins.Plugin;
+import org.elasticsearch.transport.Netty4Plugin;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.ByteArrayInputStream;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.swing.*;
+import java.util.Collection;
+
+import static java.util.Arrays.asList;
 
 public class TrayIconLauncher {
 
-    protected static void launch() {
+    protected static void launch() throws NodeValidationException, IOException {
+
         final TrayIconLauncher launcher = new TrayIconLauncher();
-        launcher.createAndShowGUI();
+        Node elasticServerNode = null;
+        Client elasticClient = null;
+        try {
+            elasticServerNode = launcher.startElasticSearchNode();
+            elasticClient = elasticServerNode.client();
+            launcher.createAndShowGUI(elasticClient);
+        } catch (Exception ex) {
+            if (elasticServerNode != null) {
+                elasticClient.close();
+                elasticServerNode.close();
+            }
+        }
     }
 
-    private void createAndShowGUI() {
+    private void createAndShowGUI(final Client elasticClient) {
         //Check the SystemTray support
         if (!SystemTray.isSupported()) {
             System.out.println("SystemTray is not supported");
@@ -92,7 +113,7 @@ public class TrayIconLauncher {
 
             // Create a popup menu components
             MenuItem aboutItem = new MenuItem("About");
-            CheckboxMenuItem cb1 = new CheckboxMenuItem("Set auto size");
+            CheckboxMenuItem cb1 = new CheckboxMenuItem("Test Elastic");
             CheckboxMenuItem cb2 = new CheckboxMenuItem("Set tooltip");
             Menu displayMenu = new Menu("Display");
             MenuItem errorItem = new MenuItem("Error");
@@ -204,6 +225,25 @@ public class TrayIconLauncher {
     protected Image createImage(Path path, String description) throws IOException {
         final byte[] imageData = Files.readAllBytes(path);
         return (new ImageIcon(imageData, description)).getImage();
+    }
+
+    public Node startElasticSearchNode() throws NodeValidationException {
+        final Node node = new MyNode(
+            Settings.builder()
+                .put("transport.type", "netty4")
+                .put("http.type", "netty4")
+                .put("http.enabled", "true")
+                .put("path.home", "elasticsearch-data")
+                .build(),
+            asList(Netty4Plugin.class));
+        node.start();
+        return node;
+    }
+
+    private static class MyNode extends Node {
+        public MyNode(Settings preparedSettings, Collection<Class<? extends Plugin>> classpathPlugins) {
+            super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, null), classpathPlugins);
+        }
     }
 
 }

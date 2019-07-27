@@ -30,6 +30,7 @@ import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.transport.Netty4Plugin;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
@@ -55,29 +56,15 @@ public class DunLauncher {
         //adding TrayIcon.
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                TrayIconLauncher.launch();
+                try {
+                    TrayIconLauncher.launch();
+                } catch (NodeValidationException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
-
-    public Node elasticSearchTestNode() throws NodeValidationException {
-        Node node = new MyNode(
-            Settings.builder()
-                .put("transport.type", "netty4")
-                .put("http.type", "netty4")
-                .put("http.enabled", "true")
-                .put("path.home", "elasticsearch-data")
-                .build(),
-            asList(Netty4Plugin.class));
-        node.start();
-        return node;
-    }
-
-    private static class MyNode extends Node {
-        public MyNode(Settings preparedSettings, Collection<Class<? extends Plugin>> classpathPlugins) {
-            super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, null), classpathPlugins);
-        }
-    }
-
 
 }
